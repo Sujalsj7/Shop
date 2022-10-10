@@ -1,22 +1,72 @@
 import React from "react";
-// import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CartState } from "../context/Context";
-// import Context from "../context/Context";
-// import { FormControl } from "react-bootstrap";
+
 import { AiOutlineShoppingCart } from "react-icons/ai";
-// import { Link } from "react-router-dom";
-import Header from "./header";
+
+
+
+import { FormControl } from "react-bootstrap";
+import Dropdown from "react-bootstrap/Dropdown";
+
+
+import { Link } from "react-router-dom";
+import { FaShoppingCart } from "react-icons/fa";
+import { AiFillDelete } from "react-icons/ai";
+
+import {
+  Badge,
+  
+  Nav,
+  Button,
+  
+} from "react-bootstrap";
+
 
 const List = () => {
   const {
     state: { cart },
     dispatch,
+    // productDispatch
   } = CartState();
 
   const {
     state: { products },
+    // productState:{searchQuery}
   } = CartState();
-  console.log(products);
+  
+
+  
+  
+  
+
+  const [filter, setFilter] = useState(products);
+
+
+  // --------------------------SEARCH FUNCTION-------------------------
+  
+  // const transformProducts = (e)=>{
+  //   let sortedProducts = products;
+
+  //   if(searchQuery){
+  //     sortedProducts = products.filter((prod)=>
+  //     prod.name.toLowerCase().includes(searchQuery))
+
+  //     setFilter(sortedProducts);
+      
+      
+  //   }
+
+    
+  // }
+
+
+  console.log(filter);
+
+  const filterProduct = (cat) => {
+    const updatedList = products.filter((x) => x.color === cat);
+    setFilter(updatedList);
+  };
 
   
 
@@ -27,7 +77,103 @@ const List = () => {
           <div class="row">
             <div class="col">
               <div class="card">
-                <Header />
+                {/* <Header /> */}
+
+                <div class="card-header d-flex ">
+                  
+
+                  <Button
+                    className="m-1"
+                    type="submit"
+                    onClick={() => filterProduct("turquoise")}
+                  >
+                   turquoise
+                  </Button>
+                  <Button
+                    className="m-1"
+                    type="submit"
+                    onClick={() => filterProduct("orchid")}
+                  >
+                    orchid
+                  </Button>
+                  <Button
+                    className="m-1"
+                    type="submit"
+                    onClick={() => filterProduct("blue")}
+                  >
+                    blue
+                  </Button>
+
+                  <Link onClick={() => setFilter(products)} className="m-3">
+                    reset
+                  </Link>
+
+                  <div class="input-group"></div>
+
+                  <FormControl
+                    style={{ width: 200 }}
+                    placeholder="search"
+                    className="m-auto d-flex "
+                    alignRight
+                    // onChange={(e)=>{
+                    //   productDispatch({
+                    //     type:"FILTER_BY_SEARCH",
+                    //     payload:e.target.value,
+                    //   })
+                    // }}
+                    // onChange={(e)=>{
+                    //   transformProducts(e)
+                    // }}
+                  />
+                  <Nav className="m-1">
+                    <Dropdown alignRight>
+                      <Dropdown.Toggle variant="success">
+                        <FaShoppingCart color="white" fontSize="25px" />
+                        <Badge>{cart.length}</Badge>
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu style={{ minWidth: 370 }}>
+                        {cart.length > 0 ? (
+                          <>
+                            {cart.map((prod) => (
+                              <span className="cartitem" key={prod.id}>
+                                <img
+                                  src={prod.image}
+                                  className="cartItemImg"
+                                  alt={prod.name}
+                                />
+                                <div className="cartItemDetail">
+                                  <span>{prod.name}</span>
+                                  <span>₹ {prod.price.split(".")[0]}</span>
+                                </div>
+                                <AiFillDelete
+                                  fontSize="20px"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() =>
+                                    dispatch({
+                                      type: "REMOVE_TO_CART",
+                                      payload: prod,
+                                    })
+                                  }
+                                />
+                              </span>
+                            ))}
+
+                            <Link to="/checkout">
+                              <Button
+                                style={{ width: "95%", margin: "0 10px" }}
+                              >
+                                Go To Cart
+                              </Button>
+                            </Link>
+                          </>
+                        ) : (
+                          <span style={{ padding: 10 }}>Cart is Empty!</span>
+                        )}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </Nav>
+                </div>
 
                 {/* ------------------------------------------------------------------ */}
 
@@ -40,11 +186,10 @@ const List = () => {
                       <th>Stock</th>
                       <th>price</th>
                       <th>Buy</th>
-                      
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((prod) => {
+                    {filter.map((prod) => {
                       return (
                         <tr>
                           <td>
@@ -59,8 +204,6 @@ const List = () => {
                           <td>{prod.instock}</td>
                           <td>{prod.price}</td>
                           <td>
-                            
-
                             {cart.some((p) => p.id === prod.id) ? (
                               <button
                                 onClick={() => {
@@ -110,3 +253,4 @@ const List = () => {
 };
 
 export default List;
+
